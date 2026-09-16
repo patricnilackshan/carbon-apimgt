@@ -39,6 +39,7 @@ import org.wso2.carbon.apimgt.api.model.APIProduct;
 import org.wso2.carbon.apimgt.api.model.APIProductIdentifier;
 import org.wso2.carbon.apimgt.api.model.APIStatus;
 import org.wso2.carbon.apimgt.api.model.ApiTypeWrapper;
+import org.wso2.carbon.apimgt.api.model.OrganizationInfo;
 import org.wso2.carbon.apimgt.api.model.Tier;
 import org.wso2.carbon.apimgt.api.model.URITemplate;
 import org.wso2.carbon.apimgt.impl.APIConstants;
@@ -845,5 +846,21 @@ public class PublisherCommonUtilsTest {
         PowerMockito.when(APIUtil.validateEndpointURLs(Mockito.any())).thenReturn(true);
 
         Assert.assertTrue(PublisherCommonUtils.validateEndpoints(new APIDTOTypeWrapper(apiDto)));
+    }
+
+    @Test
+    public void testAddAPIWithGeneratedSwaggerDefinitionRejectsGraphQLType() throws Exception {
+
+        APIDTO apiDto = new APIDTO();
+        apiDto.setName("GraphQLAPIWithoutSchema");
+        apiDto.setType(APIDTO.TypeEnum.GRAPHQL);
+
+        try {
+            PublisherCommonUtils.addAPIWithGeneratedSwaggerDefinition(new APIDTOTypeWrapper(apiDto), "v3",
+                    "admin", ORGANIZATION, new OrganizationInfo());
+            fail("Expected APIManagementException was not thrown for GraphQL API creation from scratch");
+        } catch (APIManagementException e) {
+            Assert.assertEquals(ExceptionCodes.GRAPHQL_SCHEMA_CANNOT_BE_NULL, e.getErrorHandler());
+        }
     }
 }

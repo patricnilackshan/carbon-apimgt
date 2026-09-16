@@ -2352,6 +2352,12 @@ public class PublisherCommonUtils {
                     ExceptionCodes.API_CREATION_NOT_SUPPORTED_FOR_ASYNC_TYPE_APIS);
         }
 
+        if (dtoWrapper.isAPIDTO() && dtoWrapper.getType() == APIDTO.TypeEnum.GRAPHQL) {
+            throw new APIManagementException("GraphQL API type does not support API creation from scratch. "
+                    + "Use /apis/import-graphql-schema instead.",
+                    ExceptionCodes.GRAPHQL_SCHEMA_CANNOT_BE_NULL);
+        }
+
         boolean isWSAPI = dtoWrapper.isAPIDTO() && dtoWrapper.getType() == APIDTO.TypeEnum.WS;
         boolean isAsyncAPI = isWSAPI || dtoWrapper.isAPIDTO() &&
                 (dtoWrapper.getType() == APIDTO.TypeEnum.WEBSUB ||
